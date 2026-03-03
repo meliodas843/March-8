@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Мартын 8</title>
+
+<style>
+  :root{
+    --ink:#14141a;
+    --muted:#6a6a77;
+    --shadow: 0 18px 45px rgba(0,0,0,.10);
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; }
+
+  body{
+    margin:0;
+    overflow:hidden;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    color:var(--ink);
+
+    /* soft warm background */
+    background:
+      radial-gradient(circle at 18% 18%, rgba(255, 190, 200, 0.26), transparent 52%),
+      radial-gradient(circle at 82% 30%, rgba(255, 215, 175, 0.22), transparent 55%),
+      linear-gradient(180deg, #fff7f3, #fff1f6 55%, #fff7f3);
+  }
+
+  .rainLayer{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:1;
+  }
+
+  .wrap{
+    height:100%;
+    display:grid;
+    place-items:center;
+    padding: 24px;
+    position:relative;
+    z-index:2;
+  }
+
+  .card{
+    width:min(820px, 94vw);
+    text-align:center;
+    position:relative;
+  }
+
+  /* ===== Scene 1 ===== */
+  #scene1{
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  #scene1.fadeScene{
+    opacity:0;
+    transform: translateY(14px);
+    pointer-events:none;
+  }
+
+  /* Boy */
+  .kidBox{
+    width:min(320px, 78vw);
+    margin: 0 auto;
+    cursor:pointer;
+    user-select:none;
+    transform-origin: 50% 70%;
+    transition: opacity .45s ease, transform .45s ease;
+    position:relative;
+  }
+
+  .kidBox img{
+    width:100%;
+    display:block;
+    filter: drop-shadow(0 16px 34px rgba(0,0,0,.10));
+  }
+
+  /* shake 3 times */
+  @keyframes shake{
+    0%   { transform: rotate(0deg) translateX(0); }
+    15%  { transform: rotate(-3deg) translateX(-2px); }
+    30%  { transform: rotate(3deg) translateX(2px); }
+    45%  { transform: rotate(-3deg) translateX(-3px); }
+    60%  { transform: rotate(3deg) translateX(3px); }
+    75%  { transform: rotate(-2deg) translateX(-2px); }
+    100% { transform: rotate(0deg) translateX(0); }
+  }
+  .shake3{ animation: shake .22s ease-in-out 6; }
+
+  /* click “special” pop */
+  @keyframes giftPop{
+    0%{ transform: scale(1) rotate(0deg); }
+    35%{ transform: scale(1.08) rotate(-1deg); }
+    65%{ transform: scale(0.98) rotate(1deg); }
+    100%{ transform: scale(1) rotate(0deg); }
+  }
+  .popOnce{ animation: giftPop .65s cubic-bezier(.2,.9,.2,1) both; }
+
+  .fadeOut{
+    opacity:0;
+    transform: translateY(12px) scale(.98);
+    pointer-events:none;
+  }
+
+  /* Headline */
+  .headline{
+    margin-top: 18px;
+    font-weight: 1000;
+    letter-spacing: -1px;
+    font-size: clamp(30px, 5.6vw, 68px);
+    line-height: 1.05;
+    opacity:0;
+    transform: translateY(18px) scale(.985);
+    transition: opacity .55s ease, transform .55s ease;
+    text-rendering: geometricPrecision;
+    position:relative;
+  }
+
+  /* soft glow behind headline */
+  .headline::before{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:min(720px, 95vw);
+    height: 140px;
+    transform: translate(-50%,-50%);
+    background:
+      radial-gradient(circle at 30% 40%, rgba(255, 92, 168, .18), transparent 60%),
+      radial-gradient(circle at 70% 50%, rgba(123, 92, 255, .14), transparent 62%),
+      radial-gradient(circle at 50% 70%, rgba(42, 215, 255, .10), transparent 65%);
+    filter: blur(8px);
+    opacity:0;
+    transition: opacity .55s ease;
+    z-index:-1;
+  }
+
+  .headline.show{
+    opacity:1;
+    transform: translateY(0) scale(1);
+  }
+  .headline.show::before{ opacity:1; }
+
+  .type{ white-space: pre-wrap; }
+
+  /* typing caret */
+  .type.typing::after{
+    content:"";
+    display:inline-block;
+    width:10px;
+    height:1em;
+    margin-left:7px;
+    background: rgba(0,0,0,.42);
+    animation: blink 1s steps(2,end) infinite;
+    transform: translateY(2px);
+  }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  /* Emphasis gradient for “Ээжээ” */
+  .grad{
+    background: linear-gradient(90deg, #ff5ca8, #7b5cff, #2ad7ff);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+
+  .sub{
+    margin-top: 10px;
+    color: var(--muted);
+    font-weight: 750;
+    font-size: 14px;
+  }
+
+  /* Flower PNG rain */
+  .petal{
+    position:fixed;
+    top:-80px;
+    left:0;
+    pointer-events:none;
+    z-index:1;
+    will-change: transform;
+    transform: translateX(var(--x)) rotate(var(--r));
+    animation: fall var(--d) linear forwards;
+    filter: drop-shadow(0 14px 18px rgba(255, 92, 168, .10));
+    opacity: .98;
+  }
+
+  @keyframes fall{
+    to{
+      transform: translateX(calc(var(--x) + var(--sway))) translateY(115vh) rotate(calc(var(--r) + 520deg));
+      opacity: 1;
+    }
+  }
+
+  /* ===== Scene 2 (hug + notebook) ===== */
+  #scene2{
+    display:none;
+    width:min(980px, 94vw);
+    align-items:center;
+    justify-content:center;
+    gap: clamp(18px, 4vw, 60px);
+    opacity:0;
+    transform: translateY(18px);
+    transition: opacity .8s ease, transform .8s ease;
+  }
+  #scene2.show{
+    opacity:1;
+    transform: translateY(0);
+  }
+
+  .hugBox{
+    width:min(380px, 42vw);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .hugBox img{
+    width:100%;
+    height:auto;
+    display:block;
+    filter: drop-shadow(0 22px 42px rgba(0,0,0,.14));
+  }
+
+  .note{
+    width:min(520px, 50vw);
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.92),
+        rgba(255,255,255,.92) 34px,
+        rgba(233,233,240,.92) 35px
+      );
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.12);
+    padding: 38px 34px 34px;
+    position:relative;
+    border: 1px solid rgba(20,20,30,.08);
+    backdrop-filter: blur(6px);
+  }
+
+  /* red margin line */
+  .note::before{
+    content:"";
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:34px;
+    width:2px;
+    background: rgba(255, 120, 140, .75);
+  }
+
+  .noteTitle{
+    font-weight: 950;
+    letter-spacing: -.4px;
+    font-size: 18px;
+    margin: 0 0 14px 18px;
+    color: rgba(20,20,26,.86);
+  }
+
+  .noteText{
+    margin-left: 18px;
+    font-size: 18px;
+    line-height: 1.85;
+    white-space: pre-wrap;
+    color: rgba(20,20,26,.86);
+  }
+
+  .noteText.typing::after{
+    content:"";
+    display:inline-block;
+    width:10px;
+    height:1em;
+    margin-left:7px;
+    background: rgba(0,0,0,.42);
+    animation: blink 1s steps(2,end) infinite;
+    transform: translateY(2px);
+  }
+
+  @media (max-width: 900px){
+    #scene2{
+      flex-direction:column;
+      gap: 18px;
+    }
+    .hugBox{ width:min(300px, 70vw); }
+    .note{ width:min(560px, 92vw); }
+  }
+
+  @media (max-width:520px){
+    .kidBox{ width:min(280px, 86vw); }
+  }
+</style>
+</head>
+
+<body>
+  <div class="rainLayer" id="rainLayer" aria-hidden="true"></div>
+
+  <main class="wrap">
+    <section class="card">
+
+      <!-- SCENE 1 (your current flow) -->
+      <div id="scene1">
+        <div class="kidBox" id="kid" aria-label="Дарж нээнэ үү">
+          <img src="kid.png" alt="Kid holding a present">
+        </div>
+
+        <div class="headline" id="headline">
+          <span class="type" id="typeText"></span>
+        </div>
+
+        <div class="sub" id="sub">Хүү дээр дарна уу 🎁</div>
+      </div>
+
+      <!-- SCENE 2 (hug left + notebook right) -->
+      <div id="scene2" aria-label="Hug and letter">
+        <div class="hugBox">
+          <img src="hugging.png" alt="Mother and son hugging">
+        </div>
+
+        <div class="note">
+          <div class="noteTitle">Ээждээ 💗</div>
+          <div class="noteText typing" id="noteText"></div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+<script>
+  const kid = document.getElementById("kid");
+  const headline = document.getElementById("headline");
+  const typeText = document.getElementById("typeText");
+  const sub = document.getElementById("sub");
+  const rainLayer = document.getElementById("rainLayer");
+
+  const scene1 = document.getElementById("scene1");
+  const scene2 = document.getElementById("scene2");
+  const noteText = document.getElementById("noteText");
+
+  const message = "Мартын 8-ны мэнд хүргэе, Ээжээ";
+
+  // Notebook letter (edit this however you want)
+  const letter =
+`Ээжээ,
+
+Таны хайр, халамж, тэвчээр
+намайг өдөр бүр хүчтэй болгодог.
+
+Үргэлж инээмсэглэж,
+эрүүл энх, аз жаргалтай яваарай.
+
+Тандаа маш их хайртай 💐`;
+
+  function restartAnim(el, cls){
+    el.classList.remove(cls);
+    void el.offsetWidth;
+    el.classList.add(cls);
+  }
+
+  function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+  window.addEventListener("load", () => {
+    restartAnim(kid, "shake3");
+  });
+
+  async function typewriterHeadline(text, speed=42){
+    typeText.textContent = "";
+    typeText.classList.add("typing");
+
+    for(let i=0;i<text.length;i++){
+      typeText.textContent += text[i];
+      await sleep(speed);
+    }
+    typeText.classList.remove("typing");
+
+    // make “Ээжээ” gradient after typing finishes
+    const parts = text.split("Ээжээ");
+    if (parts.length === 2){
+      typeText.innerHTML = `${parts[0]}<span class="grad">Ээжээ</span>`;
+    }
+  }
+
+  async function typewriterNote(text, speed=28){
+    noteText.textContent = "";
+    noteText.classList.add("typing");
+
+    for(let i=0;i<text.length;i++){
+      noteText.textContent += text[i];
+      await sleep(speed);
+    }
+    noteText.classList.remove("typing");
+  }
+
+  let rainTimer = null;
+
+  function createFlower(){
+    const img = document.createElement("img");
+    img.src = "flower.png";     // watercolor flower
+    img.alt = "";
+    img.className = "petal";
+
+    const size = 26 + Math.random() * 42;         // 26..68px
+    img.style.width = size + "px";
+    img.style.height = "auto";
+
+    const x = Math.random() * 100;                 // vw
+    const r = (Math.random() * 120 - 60) + "deg";  // deg
+    const d = (4.2 + Math.random() * 3.6) + "s";   // seconds
+    const sway = (Math.random() * 160 - 80) + "px"; // drift
+
+    img.style.setProperty("--x", x + "vw");
+    img.style.setProperty("--r", r);
+    img.style.setProperty("--d", d);
+    img.style.setProperty("--sway", sway);
+
+    rainLayer.appendChild(img);
+    setTimeout(() => img.remove(), 9500);
+  }
+
+  function startRain(){
+    if (rainTimer) return;
+
+    for (let i=0;i<18;i++) createFlower();
+    rainTimer = setInterval(() => {
+      const n = 2 + Math.floor(Math.random() * 3); // 2–4
+      for (let i=0;i<n;i++) createFlower();
+    }, 220);
+  }
+
+  function switchToScene2(){
+    // fade scene 1 out
+    scene1.classList.add("fadeScene");
+
+    // show scene2
+    setTimeout(async () => {
+      scene1.style.display = "none";
+      scene2.style.display = "flex";
+      // force layout then animate
+      void scene2.offsetWidth;
+      scene2.classList.add("show");
+      await sleep(450);
+      await typewriterNote(letter, 26);
+    }, 650);
+  }
+
+  let opened = false;
+
+  kid.addEventListener("click", async () => {
+    if (opened) return;
+    opened = true;
+
+    kid.classList.add("popOnce");
+    await sleep(140);
+
+    startRain();
+
+    await sleep(260);
+    kid.classList.add("fadeOut");
+    sub.textContent = "";
+
+    setTimeout(() => { kid.style.display = "none"; }, 700);
+
+    headline.classList.add("show");
+    await sleep(220);
+    await typewriterHeadline(message, 40);
+
+    // ✅ after showing for 4 seconds -> go to hug + notebook
+    await sleep(4000);
+    switchToScene2();
+  });
+</script>
+</body>
+</html>
