@@ -20,8 +20,6 @@
     overflow:hidden;
     font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
     color:var(--ink);
-
-    /* soft warm background */
     background:
       radial-gradient(circle at 18% 18%, rgba(255, 190, 200, 0.26), transparent 52%),
       radial-gradient(circle at 82% 30%, rgba(255, 215, 175, 0.22), transparent 55%),
@@ -298,35 +296,26 @@
 
   <main class="wrap">
     <section class="card">
-
-      <!-- SCENE 1 (your current flow) -->
       <div id="scene1">
         <div class="kidBox" id="kid" aria-label="Дарж нээнэ үү">
-          <img src="kid.png" alt="Kid holding a present">
+          <img src="kid-present.png" alt="Kid holding a present">
         </div>
-
         <div class="headline" id="headline">
           <span class="type" id="typeText"></span>
         </div>
-
         <div class="sub" id="sub">Хүү дээр дарна уу 🎁</div>
       </div>
-
-      <!-- SCENE 2 (hug left + notebook right) -->
       <div id="scene2" aria-label="Hug and letter">
         <div class="hugBox">
           <img src="hugging.png" alt="Mother and son hugging">
         </div>
-
         <div class="note">
           <div class="noteTitle">Ээждээ 💗</div>
           <div class="noteText typing" id="noteText"></div>
         </div>
       </div>
-
     </section>
   </main>
-
 <script>
   const kid = document.getElementById("kid");
   const headline = document.getElementById("headline");
