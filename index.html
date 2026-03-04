@@ -183,7 +183,7 @@
     transform: translateX(var(--x)) rotate(var(--r));
     animation: fall var(--d) linear forwards;
     filter: drop-shadow(0 14px 18px rgba(255, 92, 168, .10));
-    opacity: .98;
+    opacity: .95;
   }
 
   @keyframes fall{
@@ -405,17 +405,17 @@
     img.style.setProperty("--sway", sway);
 
     rainLayer.appendChild(img);
-    setTimeout(() => img.remove(), 9500);
+    setTimeout(() => img.remove(), 6000);
   }
 
   function startRain(){
     if (rainTimer) return;
 
-    for (let i=0;i<18;i++) createFlower();
+    for (let i=0;i<8;i++) createFlower();
     rainTimer = setInterval(() => {
-      const n = 2 + Math.floor(Math.random() * 3); // 2–4
+      const n = 1 + Math.floor(Math.random() * 2); // 2–4
       for (let i=0;i<n;i++) createFlower();
-    }, 220);
+    }, 450);
   }
 
   function switchToScene2(){
